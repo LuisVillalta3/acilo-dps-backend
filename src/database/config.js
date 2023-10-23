@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 module.exports = {
   development: {
-    dialect: process.env.DB_DIALECT || 'postgres',
+    dialect: 'postgres',
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
     username: process.env.DB_USERNAME || 'postgres',
