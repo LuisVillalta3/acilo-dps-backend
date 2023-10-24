@@ -1,13 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
+import { DATABASE, HOST, PASSWORD, PORT, USERNAME } from 'src/secrets';
 
 export const databaseConfig: SequelizeModuleOptions = {
-  dialect: process.env.DB_DIALECT as any,
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  dialect: 'postgres',
+  host: HOST,
+  port: PORT,
+  username: USERNAME,
+  password: PASSWORD,
+  database: DATABASE,
   retryAttempts: 5,
   autoLoadModels: true,
   synchronize: true,
