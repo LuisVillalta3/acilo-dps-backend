@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger'
-import { Table, Column, Model } from 'sequelize-typescript'
+import { Table, Column, Model, HasMany } from 'sequelize-typescript'
+import { Horario } from './horarios.entity'
 
 @Table({ tableName: 'doctors', timestamps: true, modelName: 'Doctor', paranoid: true })
 export class Doctor extends Model {
@@ -31,4 +32,8 @@ export class Doctor extends Model {
   @Column({ defaultValue: true })
   @ApiProperty({ readOnly: true, type: Boolean, example: true })
   disponible: boolean
+
+  @HasMany(() => Horario, 'idDoctor')
+  @ApiProperty({ readOnly: true, type: [Horario] })
+  horarios: Horario[]
 }

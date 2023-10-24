@@ -12,6 +12,8 @@ import { Doctor } from './entities/doctor.entity';
 import { DoctorsService } from './doctors.service';
 import { ApiTags, ApiOkResponse, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
+import { Horario } from './entities/horarios.entity';
+import { HorarioDto } from './dto/horarios-dto';
 
 @Controller({ version: '1', path: 'doctors' })
 @ApiTags('Doctores')
@@ -42,8 +44,16 @@ export class DoctorsController {
     status: 404,
     description: 'Doctor not found',
   })
-  findOne(@Param('id') id: number): Promise<Doctor> {
-    return this.doctorsService.findOne(id);
+  @ApiQuery({
+    name: 'includeHorarios',
+    required: false,
+    description: 'Include the horarios of the doctor',
+  })
+  findOne(
+    @Param('id') id: number,
+    @Query('includeHorarios') includeHorarios: boolean,
+  ): Promise<Doctor> {
+    return this.doctorsService.findOne(id, includeHorarios);
   }
 
   @Post()
@@ -62,5 +72,34 @@ export class DoctorsController {
     @Body() updateDoctorDto: CreateDoctorDto,
   ): Promise<Doctor> {
     return this.doctorsService.update(id, updateDoctorDto);
+  }
+
+  @Get(':id/horarios')
+  @ApiOkResponse({
+    description: 'Los horarios del doctor',
+    type: [Horario],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Doctor not found',
+  })
+  getHorarios(@Param('id') id: number): Promise<Horario[]> {
+    return this.doctorsService.getHorarios(id);
+  }
+
+  @Patch(':id/horarios')
+  @ApiOkResponse({
+    description: 'Los horarios del doctor',
+    type: [Horario],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Doctor not found',
+  })
+  updateHorarios(
+    @Param('id') id: number,
+    @Body() horario: HorarioDto,
+  ): Promise<Horario[]> {
+    return this.doctorsService.updateHorarios(id, horario);
   }
 }

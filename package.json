@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate": "sequelize-cli migration:generate --name",
     "db:migrate": "sequelize-cli db:migrate",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo",
     "db:create": "sequelize-cli db:create"
   },
   "dependencies": {
