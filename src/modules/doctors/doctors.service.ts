@@ -10,6 +10,7 @@ import { defaultHorarios } from './constants';
 import { Horario } from './entities/horarios.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { HorarioDto } from './dto/horarios-dto';
+import { Especialidad } from '../specialties/entities/specialties.entity';
 
 @Injectable()
 export class DoctorsService {
@@ -31,11 +32,18 @@ export class DoctorsService {
     return this.doctorModel.findAll({ where });
   }
 
-  async findOne(id: number, includeHorarios?: boolean): Promise<Doctor> {
-    const doctor = await this.doctorModel.findByPk(id, {
-      include:
-        String(includeHorarios) === 'true' ? [{ model: Horario }] : undefined,
-    });
+  async findOne(id: number, includeHorarios?: boolean, includeEspecialidad?: boolean): Promise<Doctor> {
+    const include = [];
+
+    if (String(includeHorarios) === 'true') {
+      include.push({ model: Horario });
+    }
+
+    if (String(includeEspecialidad) === 'true') {
+      include.push({ model: Especialidad });
+    }
+
+    const doctor = await this.doctorModel.findByPk(id, { include });
 
     if (!doctor) {
       throw new NotFoundException('Doctor not found');

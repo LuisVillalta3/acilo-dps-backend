@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { databaseConfig } from './database/database.config';
 import { DoctorsModule } from './modules/doctors/doctors.module';
 import { PatientsModule } from './modules/patients/patients.module';
+import { SpecialtiesModule } from './modules/specialties/specialties.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PatientsModule } from './modules/patients/patients.module';
     SequelizeModule.forRoot(databaseConfig),
     DoctorsModule,
     PatientsModule,
+    SpecialtiesModule,
   ],
 })
 export class AppModule {}

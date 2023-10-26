@@ -50,11 +50,17 @@ export class DoctorsController {
     required: false,
     description: 'Include the horarios of the doctor',
   })
+  @ApiQuery({
+    name: 'includeEspecialidad',
+    required: false,
+    description: 'Incluir la especialidad del doctor',
+  })
   findOne(
     @Param('id') id: number,
     @Query('includeHorarios') includeHorarios: boolean,
+    @Query('includeEspecialidad') includeEspecialidad: boolean,
   ): Promise<Doctor> {
-    return this.doctorsService.findOne(id, includeHorarios);
+    return this.doctorsService.findOne(id, includeHorarios, includeEspecialidad);
   }
 
   @Post()
