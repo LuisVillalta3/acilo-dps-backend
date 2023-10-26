@@ -32,8 +32,28 @@ export class DoctorsController {
     required: false,
     description: 'The name of the doctor',
   })
-  findAll(@Query('name') name?: string): Promise<Doctor[]> {
-    return this.doctorsService.findAll(name);
+  @ApiQuery({
+    name: 'especialidad',
+    required: false,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'includeHorarios',
+    required: false,
+    description: 'Include the horarios of the doctor',
+  })
+  @ApiQuery({
+    name: 'includeEspecialidad',
+    required: false,
+    description: 'Incluir la especialidad del doctor',
+  })
+  findAll(
+    @Query('name') name?: string,
+    @Query('name') especialidad?: number,
+    @Query('includeHorarios') includeHorarios?: boolean,
+    @Query('includeEspecialidad') includeEspecialidad?: boolean,
+  ): Promise<Doctor[]> {
+    return this.doctorsService.findAll(name, especialidad, includeHorarios, includeEspecialidad);
   }
 
   @Get(':id')

@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Especialidad } from './entities/specialties.entity';
 import { InjectModel } from '@nestjs/sequelize';
+import { NotFoundException } from '../../exceptions/not-found.exception';
 
 @Injectable()
 export class SpecialtiesService {

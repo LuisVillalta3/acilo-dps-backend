@@ -20,8 +20,9 @@ export class DoctorsService {
     private sequelize: Sequelize,
   ) {}
 
-  async findAll(name?: string): Promise<Doctor[]> {
+  async findAll(name?: string, especialidad?: number, includeHorarios?: boolean, includeEspecialidad?: boolean): Promise<Doctor[]> {
     const where: any = {};
+    const include = [];
 
     if (name) {
       where.nombre = {
@@ -29,7 +30,21 @@ export class DoctorsService {
       };
     }
 
-    return this.doctorModel.findAll({ where });
+    if (especialidad) {
+      where.idEspecialidad = {
+        [Op.eq]: especialidad,
+      }
+    }
+
+    if (String(includeHorarios) === 'true') {
+      include.push({ model: Horario });
+    }
+
+    if (String(includeEspecialidad) === 'true') {
+      include.push({ model: Especialidad });
+    }
+
+    return this.doctorModel.findAll({ where, include });
   }
 
   async findOne(id: number, includeHorarios?: boolean, includeEspecialidad?: boolean): Promise<Doctor> {
