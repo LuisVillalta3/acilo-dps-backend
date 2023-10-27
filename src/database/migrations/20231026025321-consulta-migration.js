@@ -4,7 +4,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('appointment', {
+    await queryInterface.createTable('appointments', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -58,8 +58,15 @@ module.exports = {
           notEmpty: true,
         },
       },
-      hora: {
-        type: Sequelize.TIME,
+      horaInicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      horaFin: {
+        type: Sequelize.DATE,
         allowNull: false,
         validate: {
           notEmpty: true,
