@@ -10,7 +10,7 @@ export class Doctor extends Model {
   @ApiProperty({ readOnly: true, type: Number, example: 1 })
   id: number
 
-  @Column({ allowNull: false, validate: { notEmpty: true, isAlpha: true } })
+  @Column({ allowNull: false, validate: { notEmpty: true } })
   @ApiProperty({ readOnly: true, type: String, example: 'Juan' })
   nombre: string
 

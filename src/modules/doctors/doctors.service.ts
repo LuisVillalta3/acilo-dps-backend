@@ -20,7 +20,7 @@ export class DoctorsService {
     private sequelize: Sequelize,
   ) {}
 
-  async findAll(name?: string, especialidad?: number, includeHorarios?: boolean, includeEspecialidad?: boolean): Promise<Doctor[]> {
+  async findAll(name?: string, email?: string, especialidad?: number, disponibles?: boolean, includeHorarios?: boolean, includeEspecialidad?: boolean): Promise<Doctor[]> {
     const where: any = {};
     const include = [];
 
@@ -28,6 +28,18 @@ export class DoctorsService {
       where.nombre = {
         [Op.iLike]: `%${name}%`,
       };
+    }
+
+    if (email) {
+      where.email = {
+        [Op.iLike]: `%${email}%`,
+      };
+    }
+
+    if (disponibles) {
+      where.disponible = {
+        [Op.eq]: disponibles,
+      }
     }
 
     if (especialidad) {
@@ -51,7 +63,7 @@ export class DoctorsService {
     const include = [];
 
     if (String(includeHorarios) === 'true') {
-      include.push({ model: Horario });
+      include.push({ model: Horario, order: [['dia', 'ASC']] });
     }
 
     if (String(includeEspecialidad) === 'true') {

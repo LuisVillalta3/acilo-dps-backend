@@ -15,6 +15,7 @@ import { ApiTags, ApiOkResponse, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { Horario } from './entities/horarios.entity';
 import { HorarioDto } from './dto/horarios-dto';
+import { SuccessResponse } from '../../responses/success-response';
 
 @Controller({ version: '1', path: 'doctors' })
 @ApiTags('Doctores')
@@ -33,6 +34,11 @@ export class DoctorsController {
     description: 'The name of the doctor',
   })
   @ApiQuery({
+    name: 'email',
+    required: false,
+    description: 'The email of the doctor',
+  })
+  @ApiQuery({
     name: 'especialidad',
     required: false,
     type: Number,
@@ -47,13 +53,27 @@ export class DoctorsController {
     required: false,
     description: 'Incluir la especialidad del doctor',
   })
+  @ApiQuery({
+    name: 'disponible',
+    required: false,
+    description: 'Filtrar por disponibles',
+  })
   findAll(
     @Query('name') name?: string,
-    @Query('name') especialidad?: number,
+    @Query('email') email?: string,
+    @Query('especialidad') especialidad?: number,
+    @Query('disponibles') disponibles?: boolean,
     @Query('includeHorarios') includeHorarios?: boolean,
     @Query('includeEspecialidad') includeEspecialidad?: boolean,
   ): Promise<Doctor[]> {
-    return this.doctorsService.findAll(name, especialidad, includeHorarios, includeEspecialidad);
+    return this.doctorsService.findAll(
+      name,
+      email,
+      especialidad,
+      disponibles,
+      includeHorarios,
+      includeEspecialidad
+    );
   }
 
   @Get(':id')
@@ -89,8 +109,13 @@ export class DoctorsController {
     description: 'The doctor has been successfully created',
     type: Doctor,
   })
-  create(@Body() createDoctorDto: CreateDoctorDto): Promise<Doctor> {
-    return this.doctorsService.create(createDoctorDto);
+  async create(@Body() createDoctorDto: CreateDoctorDto): Promise<SuccessResponse<Doctor>> {
+    await this.doctorsService.create(createDoctorDto);
+
+    return new SuccessResponse<Doctor>(
+      'Doctor creado exitosamente',
+      HttpStatus.CREATED,
+    )
   }
 
   @Patch(':id')
