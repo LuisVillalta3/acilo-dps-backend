@@ -62,17 +62,38 @@ export class ConsultasController {
     required: false,
     description: 'Incluir el paciente',
   })
+  @ApiQuery({
+    name: 'proximasCitas',
+    required: false,
+    description: 'Incluir solo las proximas citas',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'limit',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'status',
+  })
   findAll(
     @Query('includeDoctor') includeDoctor?: boolean,
     @Query('includeEspecialidad') includeEspecialidad?: boolean,
     @Query('includeTipoConsulta') includeTipoConsulta?: boolean,
     @Query('includePaciente') includePaciente?: boolean,
+    @Query('proximasCitas') proximasCitas?: boolean,
+    @Query('limit') limit?: number,
+    @Query('status') status?: number,
   ): Promise<Consulta[]> {
     return this.consultasService.findAll(
       includeDoctor,
       includeEspecialidad,
       includeTipoConsulta,
       includePaciente,
+      proximasCitas,
+      limit,
+      status,
     );
   }
 

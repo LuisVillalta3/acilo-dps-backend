@@ -18,6 +18,7 @@ import { CreateConsultaDto } from './dto/create-consulta.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
 import { ReagendarDto } from './dto/reagendar.dto';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ConsultasService {
@@ -32,8 +33,12 @@ export class ConsultasService {
     includeEspecialidad?: boolean,
     includeTipoConsulta?: boolean,
     includePaciente?: boolean,
+    proximasCitas?: boolean,
+    limit?: number,
+    status?: number,
   ): Promise<Consulta[]> {
     const include = [];
+    const where: any = {};
 
     if (String(includeDoctor) === 'true') {
       include.push({ model: Doctor });
@@ -51,7 +56,22 @@ export class ConsultasService {
       include.push({ model: Paciente });
     }
 
-    return this.consultaModel.findAll({ include });
+    if (status) {
+      where.status = {
+        [Op.eq]: Number(status),
+      };
+    }
+
+    if (String(proximasCitas) === 'true') {
+      where.status = {
+        [Op.eq]: PROXIMAS_CONSULTAS,
+      };
+      where.fecha = {
+        [Op.gte]: new Date(),
+      };
+    }
+
+    return this.consultaModel.findAll({ include, where, limit });
   }
 
   async tipoConsultas(): Promise<any[]> {
@@ -105,7 +125,7 @@ export class ConsultasService {
 
     Object.assign(consulta, consultaDTO);
     const citaId =
-      new Date(consulta.fecha).getTime.toString() +
+      new Date(consulta.fecha).getTime().toString() +
       consultaDTO.idEspecialidad +
       consultaDTO.idPaciente;
 
@@ -186,7 +206,7 @@ export class ConsultasService {
         nuevaConsulta.status = PROXIMAS_CONSULTAS;
 
         const citaId =
-          new Date(reagendar.fecha).getTime.toString() +
+          new Date(reagendar.fecha).getTime().toString() +
           nuevaConsulta.especialidad.id +
           nuevaConsulta.paciente.id;
 
