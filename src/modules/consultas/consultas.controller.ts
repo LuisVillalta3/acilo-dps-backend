@@ -1,7 +1,25 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Put,
+  Get,
+  Param,
+  Query,
+  Post,
+  Body,
+  Delete,
+} from '@nestjs/common';
 import { ConsultasService } from './consultas.service';
-import { ApiOkResponse, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Consulta } from './entities/consulta.entity';
+import { CreateConsultaDto } from './dto/create-consulta.dto';
+import { ReagendarDto } from './dto/reagendar.dto';
 
 @Controller({ version: '1', path: 'consultas' })
 @ApiTags('Consultas')
@@ -101,5 +119,101 @@ export class ConsultasController {
       includeTipoConsulta,
       includePaciente,
     );
+  }
+
+  @Post()
+  @ApiCreatedResponse({
+    description: 'The record has been successfully created.',
+    type: Consulta,
+  })
+  @ApiBody({ type: CreateConsultaDto })
+  create(@Body() createConsultaDto: CreateConsultaDto): Promise<Consulta> {
+    return this.consultasService.create(createConsultaDto);
+  }
+
+  @Delete(':id')
+  @ApiOkResponse({
+    description: 'Consulta',
+    type: Consulta,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consulta not found',
+  })
+  remove(@Param('id') id: number): Promise<Consulta> {
+    return this.consultasService.cancelarCita(id);
+  }
+
+  @Put('/comenzar-cita/:id')
+  @ApiOkResponse({
+    description: 'Consulta',
+    type: Consulta,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consulta not found',
+  })
+  comenzarCita(@Param('id') id: number): Promise<Consulta> {
+    return this.consultasService.comenzarConsulta(id);
+  }
+
+  @Put('/completar-cita/:id')
+  @ApiOkResponse({
+    description: 'Consulta',
+    type: Consulta,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consulta not found',
+  })
+  completarCita(@Param('id') id: number): Promise<Consulta> {
+    return this.consultasService.completarCita(id);
+  }
+
+  @Delete('/terminar-cita/:id')
+  @ApiOkResponse({
+    description: 'Consulta',
+    type: Consulta,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consulta not found',
+  })
+  terminarCita(@Param('id') id: number): Promise<Consulta> {
+    return this.consultasService.terminarConsulta(id);
+  }
+
+  @Put('/reagendar/:id')
+  @ApiOkResponse({
+    description: 'Consulta',
+    type: Consulta,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consulta not found',
+  })
+  @ApiBody({ type: ReagendarDto })
+  reagendarCita(
+    @Param('id') id: number,
+    @Body() reagendarCitaDto: ReagendarDto,
+  ): Promise<Consulta> {
+    return this.consultasService.reagendarCita(id, reagendarCitaDto);
+  }
+
+  @Post('/agendar-consulta/:id')
+  @ApiOkResponse({
+    description: 'Consulta',
+    type: Consulta,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consulta not found',
+  })
+  @ApiBody({ type: ReagendarDto })
+  agendarProximaCita(
+    @Param('id') id: number,
+    @Body() reagendarCitaDto: ReagendarDto,
+  ): Promise<Consulta> {
+    return this.consultasService.agendarProximaCita(id, reagendarCitaDto);
   }
 }

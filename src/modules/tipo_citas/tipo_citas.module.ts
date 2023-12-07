@@ -8,5 +8,6 @@ import { TipoCitasService } from './tipo_citas.service';
   imports: [SequelizeModule.forFeature([TipoCita])],
   controllers: [TipoCitasController],
   providers: [TipoCitasService],
+  exports: [TipoCitasService],
 })
 export class TipoCitasModule {}

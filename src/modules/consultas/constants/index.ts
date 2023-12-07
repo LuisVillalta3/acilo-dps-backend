@@ -5,10 +5,10 @@ export const CONSULTAS_CANCELADAS = 3;
 export const CONSULTAS_TERMINADAS = 4;
 export const CONSULTAS_EN_CURSO = 5;
 
-export const STATUS_CONSULTA = {
-  1: 'Próximas consultas',
-  2: 'Consultas completadas',
-  3: 'Consultas canceladas',
-  4: 'Consultas terminadas',
-  5: 'Consultas en curso',
+export const STATUS_CONSULTA_TEXT = {
+  [PROXIMAS_CONSULTAS]: 'Próxima consultas',
+  [CONSULTAS_COMPLETADAS]: 'Consulta completada',
+  [CONSULTAS_CANCELADAS]: 'Consulta cancelada',
+  [CONSULTAS_TERMINADAS]: 'Consulta terminada',
+  [CONSULTAS_EN_CURSO]: 'Consulta en curso',
 }

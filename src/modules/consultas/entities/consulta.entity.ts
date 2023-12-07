@@ -40,7 +40,7 @@ export class Consulta extends Model {
   @ApiProperty({ readOnly: true, type: Date, example: new Date() })
   horaFin: Date
 
-  @Column({ allowNull: true})
+  @Column({ allowNull: true })
   @ApiProperty({ readOnly: true, type: String, example: 'lorem' })
   notas: string
 

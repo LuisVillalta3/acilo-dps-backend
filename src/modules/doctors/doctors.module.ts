@@ -11,5 +11,6 @@ import { Especialidad } from '../specialties/entities/specialties.entity';
   imports: [SequelizeModule.forFeature([Doctor, Horario, Especialidad])],
   providers: [DoctorsService],
   controllers: [DoctorsController],
+  exports: [DoctorsService],
 })
 export class DoctorsModule {}
