@@ -35,19 +35,6 @@ export class CreateConsultaDto {
     allowNaN: false,
     maxDecimalPlaces: 0,
   }, {
-    message: 'El id tipo cita debe ser un número entero',
-  })
-  @IsNotEmpty({
-    message: 'El id del tipo de cita es requerida',
-  })
-  idTipoConsulta: number
-
-  @ApiProperty({ type: Number, example: 1 })
-  @IsNumber({
-    allowInfinity: false,
-    allowNaN: false,
-    maxDecimalPlaces: 0,
-  }, {
     message: 'El id del paciente debe ser un número entero',
   })
   @IsNotEmpty({

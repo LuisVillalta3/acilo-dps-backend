@@ -15,10 +15,10 @@ import { TipoCita } from '../tipo_citas/entities/cita_tipos.entity';
 import { Paciente } from '../patients/entities/patient.entity';
 import { NotFoundException } from '../../exceptions/not-found.exception';
 import { CreateConsultaDto } from './dto/create-consulta.dto';
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
 import { ReagendarDto } from './dto/reagendar.dto';
 import { Op } from 'sequelize';
+import { CompletarCitaDto } from './dto/completarCita.dto';
 
 @Injectable()
 export class ConsultasService {
@@ -69,7 +69,12 @@ export class ConsultasService {
       };
     }
 
-    return this.consultaModel.findAll({ include, where, limit });
+    return this.consultaModel.findAll({
+      include,
+      where,
+      limit,
+      order: [['fecha', 'DESC']],
+    });
   }
 
   async tipoConsultas(): Promise<any[]> {
@@ -116,12 +121,12 @@ export class ConsultasService {
   async create(consultaDTO: CreateConsultaDto): Promise<Consulta> {
     await this.checkIfRecordsExists('Doctor', consultaDTO.idDoctor);
     await this.checkIfRecordsExists('Especialidad', consultaDTO.idEspecialidad);
-    await this.checkIfRecordsExists('TipoCita', consultaDTO.idTipoConsulta);
     await this.checkIfRecordsExists('Paciente', consultaDTO.idPaciente);
 
     const consulta = new Consulta();
 
     Object.assign(consulta, consultaDTO);
+    consulta.idTipoConsulta = 1;
     const citaId = `${new Date(consulta.fecha).getTime().toString()}-${
       consultaDTO.idEspecialidad
     }-${consultaDTO.idPaciente}`;
@@ -148,10 +153,14 @@ export class ConsultasService {
     return consulta.save();
   }
 
-  async completarCita(id: number): Promise<Consulta> {
+  async completarCita(
+    id: number,
+    completarCitaDto: CompletarCitaDto,
+  ): Promise<Consulta> {
     const consulta = await this.findOne(id);
 
     consulta.status = CONSULTAS_COMPLETADAS;
+    consulta.notas = completarCitaDto.notas;
 
     return consulta.save();
   }
@@ -187,35 +196,32 @@ export class ConsultasService {
     id: number,
     reagendar: ReagendarDto,
   ): Promise<Consulta> {
-    try {
-      return await this.sequelize.transaction(async (transaction) => {
-        const consulta = await this.findOne(id);
-        consulta.status = CONSULTAS_COMPLETADAS;
+    return this.sequelize.transaction(async (transaction) => {
+      const consulta = await this.findOne(id, true, true, true, true);
 
-        consulta.save({ transaction });
+      consulta.reagendada = true;
+      await consulta.save({ transaction });
 
-        const nuevaConsulta = new Consulta();
-        Object.assign(nuevaConsulta, consulta);
+      const nuevaConsulta = new Consulta();
 
-        nuevaConsulta.fecha = reagendar.fecha;
-        nuevaConsulta.horaInicio = reagendar.horaInicio;
-        nuevaConsulta.horaFin = reagendar.horaFin;
-        nuevaConsulta.status = PROXIMAS_CONSULTAS;
+      nuevaConsulta.idEspecialidad = consulta.especialidad.id;
+      nuevaConsulta.idDoctor = consulta.doctor.id;
+      nuevaConsulta.idTipoConsulta = consulta.tipoCita.id;
+      nuevaConsulta.idPaciente = consulta.paciente.id;
+      nuevaConsulta.fecha = reagendar.fecha;
+      nuevaConsulta.horaInicio = reagendar.horaInicio;
+      nuevaConsulta.horaFin = reagendar.horaFin;
+      nuevaConsulta.status = PROXIMAS_CONSULTAS;
+      nuevaConsulta.notas = '';
 
-        const citaId = `${new Date(consulta.fecha).getTime().toString()}-${
-          nuevaConsulta.especialidad.id
-        }-${nuevaConsulta.paciente.id}`;
+      const citaId = `${new Date(consulta.fecha).getTime().toString()}-${
+        consulta.especialidad.id
+      }-${consulta.paciente.id}`;
 
-        nuevaConsulta.citaId = citaId;
+      nuevaConsulta.citaId = citaId;
 
-        return nuevaConsulta.save({ transaction });
-      });
-    } catch (error) {
-      throw new HttpException(
-        'Error creating proxima consulta',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+      return await nuevaConsulta.save({ transaction });
+    });
   }
 
   async getConsultasByDoctor(idDoctor: number): Promise<Consulta[]> {
@@ -228,5 +234,26 @@ export class ConsultasService {
     const where: any = { idPaciente };
 
     return this.consultaModel.findAll({ where });
+  }
+
+  async getConsultasByPacienteAndEspecialidad(
+    idPaciente: number,
+    idEspecialidad: number,
+    excludeConsulta?: number,
+  ): Promise<Consulta[]> {
+    const where: any = { idPaciente, idEspecialidad };
+    const include = [];
+
+    include.push({ model: Doctor });
+    include.push({ model: Especialidad });
+    include.push({ model: TipoCita });
+
+    if (excludeConsulta) {
+      where.id = {
+        [Op.ne]: excludeConsulta,
+      };
+    }
+
+    return this.consultaModel.findAll({ where, include });
   }
 }

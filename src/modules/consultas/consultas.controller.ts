@@ -20,6 +20,7 @@ import {
 import { Consulta } from './entities/consulta.entity';
 import { CreateConsultaDto } from './dto/create-consulta.dto';
 import { ReagendarDto } from './dto/reagendar.dto';
+import { CompletarCitaDto } from './dto/completarCita.dto';
 
 @Controller({ version: '1', path: 'consultas' })
 @ApiTags('Consultas')
@@ -187,8 +188,12 @@ export class ConsultasController {
     status: 404,
     description: 'Consulta not found',
   })
-  completarCita(@Param('id') id: number): Promise<Consulta> {
-    return this.consultasService.completarCita(id);
+  @ApiBody({ type: CompletarCitaDto })
+  completarCita(
+    @Param('id') id: number,
+    @Body() completarCitaDto: CompletarCitaDto,
+  ): Promise<Consulta> {
+    return this.consultasService.completarCita(id, completarCitaDto);
   }
 
   @Delete('/terminar-cita/:id')
@@ -262,5 +267,31 @@ export class ConsultasController {
   })
   getByDoctor(@Param('id') id: number): Promise<Consulta[]> {
     return this.consultasService.getConsultasByDoctor(id);
+  }
+
+  @Get('/get-by-paciente-and-especialidad/:idPaciente/:idEspecialidad')
+  @ApiOkResponse({
+    description: 'Consultas',
+    type: [Consulta],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consultas not found',
+  })
+  @ApiQuery({
+    name: 'excludeConsulta',
+    required: false,
+    description: 'Excluir consulta',
+  })
+  getByPacienteAndEspecialidad(
+    @Param('idPaciente') idPaciente: number,
+    @Param('idEspecialidad') idEspecialidad: number,
+    @Query('excludeConsulta') excludeConsulta?: number,
+  ): Promise<Consulta[]> {
+    return this.consultasService.getConsultasByPacienteAndEspecialidad(
+      idPaciente,
+      idEspecialidad,
+      excludeConsulta,
+    );
   }
 }

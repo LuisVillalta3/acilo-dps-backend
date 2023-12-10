@@ -12,17 +12,29 @@ export class Consulta extends Model {
   @ApiProperty({ readOnly: true, type: Number, example: 1 })
   id: number
 
+  @Column({ allowNull: false, validate: { notEmpty: true } })
+  idEspecialidad: number
+
   @BelongsTo(() => Especialidad, 'idEspecialidad')
   @ApiProperty({ readOnly: true, type: Especialidad })
   especialidad: Especialidad
+
+  @Column({ allowNull: false, validate: { notEmpty: true } })
+  idDoctor: number
 
   @BelongsTo(() => Doctor, 'idDoctor')
   @ApiProperty({ readOnly: true, type: Doctor })
   doctor: Doctor
 
+  @Column({ allowNull: false, validate: { notEmpty: true } })
+  idTipoConsulta: number
+
   @BelongsTo(() => TipoCita, 'idTipoConsulta')
   @ApiProperty({ readOnly: true, type: TipoCita })
   tipoCita: TipoCita
+
+  @Column({ allowNull: false, validate: { notEmpty: true } })
+  idPaciente: number
 
   @BelongsTo(() => Paciente, 'idPaciente')
   @ApiProperty({ readOnly: true, type: Paciente })
@@ -51,4 +63,8 @@ export class Consulta extends Model {
   @Column({ allowNull: false })
   @ApiProperty({ readOnly: true, type: String, example: '1234-5678-901234' })
   citaId: string
+
+  @Column({ allowNull: true })
+  @ApiProperty({ readOnly: true, type: Boolean, example: false })
+  reagendada: boolean
 }

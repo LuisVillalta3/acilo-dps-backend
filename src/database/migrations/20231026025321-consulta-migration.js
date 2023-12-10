@@ -76,6 +76,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
+      reagendada: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
       status: {
         type: Sequelize.INTEGER,
         allowNull: false,
