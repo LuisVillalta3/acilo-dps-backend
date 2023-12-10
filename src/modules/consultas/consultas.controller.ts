@@ -237,4 +237,30 @@ export class ConsultasController {
   ): Promise<Consulta> {
     return this.consultasService.agendarProximaCita(id, reagendarCitaDto);
   }
+
+  @Get('/get-by-paciente/:id')
+  @ApiOkResponse({
+    description: 'Consultas',
+    type: [Consulta],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consultas not found',
+  })
+  getByPaciente(@Param('id') id: number): Promise<Consulta[]> {
+    return this.consultasService.getConsultasByPaciente(id);
+  }
+
+  @Get('/get-by-doctor/:id')
+  @ApiOkResponse({
+    description: 'Consultas',
+    type: [Consulta],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Consultas not found',
+  })
+  getByDoctor(@Param('id') id: number): Promise<Consulta[]> {
+    return this.consultasService.getConsultasByDoctor(id);
+  }
 }

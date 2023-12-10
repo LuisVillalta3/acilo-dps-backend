@@ -63,11 +63,9 @@ export class ConsultasService {
     }
 
     if (String(proximasCitas) === 'true') {
+      // status is equal to 1 or 5
       where.status = {
-        [Op.eq]: PROXIMAS_CONSULTAS,
-      };
-      where.fecha = {
-        [Op.gte]: new Date(),
+        [Op.or]: [1, 5],
       };
     }
 
@@ -124,10 +122,9 @@ export class ConsultasService {
     const consulta = new Consulta();
 
     Object.assign(consulta, consultaDTO);
-    const citaId =
-      new Date(consulta.fecha).getTime().toString() +
-      consultaDTO.idEspecialidad +
-      consultaDTO.idPaciente;
+    const citaId = `${new Date(consulta.fecha).getTime().toString()}-${
+      consultaDTO.idEspecialidad
+    }-${consultaDTO.idPaciente}`;
 
     consulta.citaId = citaId;
     consulta.status = PROXIMAS_CONSULTAS;
@@ -205,10 +202,9 @@ export class ConsultasService {
         nuevaConsulta.horaFin = reagendar.horaFin;
         nuevaConsulta.status = PROXIMAS_CONSULTAS;
 
-        const citaId =
-          new Date(reagendar.fecha).getTime().toString() +
-          nuevaConsulta.especialidad.id +
-          nuevaConsulta.paciente.id;
+        const citaId = `${new Date(consulta.fecha).getTime().toString()}-${
+          nuevaConsulta.especialidad.id
+        }-${nuevaConsulta.paciente.id}`;
 
         nuevaConsulta.citaId = citaId;
 
@@ -220,5 +216,17 @@ export class ConsultasService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async getConsultasByDoctor(idDoctor: number): Promise<Consulta[]> {
+    const where: any = { idDoctor };
+
+    return this.consultaModel.findAll({ where });
+  }
+
+  async getConsultasByPaciente(idPaciente: number): Promise<Consulta[]> {
+    const where: any = { idPaciente };
+
+    return this.consultaModel.findAll({ where });
   }
 }
